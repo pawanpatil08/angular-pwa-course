@@ -1,3 +1,4 @@
+import { promise } from "protractor";
 import {USER_SUBSCRIPTIONS} from "./in-memory-db";
 
 const webpush = require('web-push');
@@ -9,7 +10,7 @@ export function sendNewsletter(req, res) {
 
 
     // sample notification payload
-/*
+
 
     const notificationPayload = {
         "notification": {
@@ -18,7 +19,7 @@ export function sendNewsletter(req, res) {
             "icon": "assets/main-page-logo-small-hat.png",
             "vibrate": [100, 50, 100],
             "data": {
-                "dateOfArrival": 1515496004613,
+                "dateOfArrival": Date.now(),
                 "primaryKey": 1
             },
             "actions": [{
@@ -27,10 +28,13 @@ export function sendNewsletter(req, res) {
             }]
         }
     };
-
-
-    */
-
+    
+Promise.all(USER_SUBSCRIPTIONS.map(sub=>webpush.sendNotification(sub,JSON.stringify(notificationPayload))))
+.then(()=>res.status(200).json({message:"Send Successfully"}))
+.catch(err=>{
+    console.error("Error Sending Notificataion",err)
+        res.sendStatus(500)
+});
     //TODO
 
 }
